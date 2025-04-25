@@ -1,169 +1,167 @@
-\documentclass[11pt]{article}
+# Lecture 22: Unsupervised Pretraining of LLMs
 
-% Packages
-\usepackage[utf8]{inputenc}
-\usepackage{amsmath, amssymb}
-\usepackage{tcolorbox}
-\usepackage{hyperref}
-\usepackage{geometry}
-\geometry{margin=1in}
-\setlength{\parskip}{0.5em}
+**STAT 479: Probabilistic Graphical Models**  
+Lecturer: Ben Lengerich  
+Authors: Josh Salinas and Mitchell Stephens  
+*April 17, 2025*
 
-% Title
-\title{Lecture 22: Unsupervised Pretraining of LLMs}
-\author{STAT 479: Probabilistic Graphical Models\\Lecturer: Ben Lengerich\\Authors: Josh Salinas and Mitchell Stephens}
-\date{April 17, 2025}
+---
 
-\begin{document}
+## Announcements
+- Project presentations: April 29 and May 1.
+- Submit peer review forms on Canvas each day to earn up to 2% bonus.
+- Due by: Friday, May 2.
 
-\maketitle
+---
 
-\section*{Announcements}
-\begin{itemize}
-    \item Project presentations: April 29 and May 1.
-    \item Submit peer review forms on Canvas each day to earn up to 2\% bonus.
-    \item Due by: Friday, May 2.
-\end{itemize}
+## Unsupervised Training of LLMs
 
-\section{Unsupervised Training of LLMs}
-\subsection*{Maximum Likelihood Estimation (MLE)}
-\begin{itemize}
-    \item GPT models maximize the likelihood of observed sequences:
-    \[ \max_{\theta} \sum_{i=1}^T \log P_{\theta}(x_i \mid x_{<i}) \]
-    \item This is a Directed Probabilistic Graphical Model.
-    \item Predicting even simple tokens (e.g., "is" in a factual sentence) requires grammar, factual knowledge, and context resolution.
-    \item Positional encodings are added to input embeddings to provide sequence order information.
-\end{itemize}
+### Maximum Likelihood Estimation (MLE)
+- GPT models maximize the likelihood of observed sequences:
 
-\subsection*{Historical Context}
-\begin{itemize}
-    \item MLE-based models have existed since 2007.
-    \item 2007 google MLE-base language model had 2 trillion tokens and 300 billion n-grams
-    \item Early models focused on n-grams, not embeddings.
-    \item Lack of deep representation and contextual modeling.
-    \item The LLM breakthrough came with transformers, large datasets, and GPU acceleration.
-\end{itemize}
-\subsection*{GPU Importance}
-\begin{itemize}
-    \item CPUs have less cores typically between 4-8
-    \item Each core has an L1 and Control which allow for more difficult computation
-    \item GPUs can split cores to make hundreds which allow for more basic tasks to be completed faster like matrix multiplication
-    \item The only downfall to this is there is no interaction between cores and takes longer to access data from memory but overall allow for quicker computation
-    
-    \includegraphics[width=0.8\textwidth]{notesimage1.PNG}
-\end{itemize}
+  $$
+  \max_{\theta} \sum_{i=1}^T \log P_{\theta}(x_i \mid x_{<i})
+  $$
 
-\section{Scale and Emergent Capabilities}
-\begin{itemize}
-    \item As model scale increases, new capabilities emerge unexpectedly.
-    \item Examples: in-context learning, chain-of-thought reasoning.
-    \item Refer to: \textit{Scaling Laws for Neural Language Models} (Kaplan et al. 2021).
-\end{itemize}
+- This is a Directed Probabilistic Graphical Model.
+- Predicting even simple tokens (e.g., "is" in a factual sentence) requires grammar, factual knowledge, and context resolution.
+- Positional encodings are added to input embeddings to provide sequence order information.
 
-\begin{tcolorbox}
-\textbf{Example:} Predicting ``is'' in ``The capital of France \_\_ Paris'' requires
-\begin{itemize}
-    \item Subject-verb agreement
-    \item Recognition of factual structures
-    \item Geographical knowledge
-\end{itemize}
-\end{tcolorbox}
+### Historical Context
+- MLE-based models have existed since 2007.
+- The 2007 Google MLE-based language model had 2 trillion tokens and 300 billion n-grams.
+- Early models focused on n-grams, not embeddings.
+- Lack of deep representation and contextual modeling.
+- The LLM breakthrough came with transformers, large datasets, and GPU acceleration.
 
-\subsection*{In-Context Learning}
-\begin{itemize}
-    \item Once you train a few models the model will learn quickly on how to apply P(x)
-    \item Zero Shot the model is only given instructions with no examples
-    \item Few-Shot with instruction the task is given along with examples and instructions
-    \item Few-Shot with only examples no instruction is given the model must infer from the examples provided
-    
-    
-    \includegraphics[width=0.9\textwidth]{notesimage2.PNG}
-\end{itemize}
+### GPU Importance
+- CPUs typically have 4-8 cores with complex control units.
+- GPUs split tasks across hundreds of simpler cores for efficient matrix multiplication.
+- Downside: GPU cores don't communicate directly and have slower memory access, but they enable faster computation overall.
 
-\subsection*{Chain-of-Thought}
-\begin{itemize}
-    \item Chain-of-Thought is asking the model to explain its work and reasoning
-    \item An example would be showing all steps of solving a derivative of a complex equation
-    \item Showing the correct reasoning will help the model adapt quickly and provide more accurate responses
-    \item This leads to better performance especially on more complex tasks and problems
-\end{itemize}
+![GPU Architecture](notesimage1.PNG)
 
-\subsection*{Why Does This Work?}
-\begin{itemize}
-    \item No proven reason on how or why this works
-    \item Some hypothesis are task identification is implicit Bayesian inference
-    \item Transformers learn in-context by using gradient descent
-    \item Could also be a mix of both
-\end{itemize}
+---
 
-\subsection*{Scale}
-\begin{itemize}
-    \item Scale adds more randomness and diversity
-    \item It does not just overfit the data due to all the arbitrary models will cancel each other out which leads to the ensemble being a good model.
-    \item As you increase parameters you also increase variance
-    \item More randomization is good for more hyper-specific individual models
-    \item However this can be difficult for data filtering and preparation
-    \item Fitting to bad data will lead to a bad distribution which will make the model worse
-    
-    
-    \includegraphics[width=0.9\textwidth]{notesimage3.PNG}
-\end{itemize}
+## Scale and Emergent Capabilities
+- As model scale increases, new capabilities emerge unexpectedly.
+- Examples: in-context learning, chain-of-thought reasoning.
+- Refer to: *Scaling Laws for Neural Language Models* (Kaplan et al., 2021).
 
-\section{Challenges of MLE}
-\subsection*{KL Divergence Minimization}
-\begin{itemize}
-    \item MLE objective: \[ \arg\max_{\theta} \mathbb{E}_{x \sim P_{\text{data}}}[\log P_{\theta}(x)] = \arg\min_{\theta} \text{KL}(P_{\text{data}} \| P_{\theta}) \]
-    \item Issues:
-    \begin{itemize}
-        \item Repetitiveness, memorization of training data
-        \item Lack of semantic grounding or task objectives
-        \item Must assign probability to all plausible sequences, including incoherent ones
-        \item MLE is not task-aware — it doesn't optimize for downstream accuracy or meaning
-    \end{itemize}
-\end{itemize}
+> **Example:**  
+> Predicting "is" in "The capital of France __ Paris" requires:
+> - Subject-verb agreement
+> - Recognition of factual structures
+> - Geographical knowledge
 
-\subsection*{Entropy and Confidence}
-\begin{itemize}
-    \item Token-level entropy:
-    \[ H_t = -\sum_v P(x_t = v \mid x_{<t}) \log P(x_t = v \mid x_{<t}) \]
-    \item Lower entropy = higher model confidence.
-    \item Only want this if there is confidence the model has learned well and the output will be correct
-    \item Models may output overly generic or repetitive text when entropy is low.
-    \item Sampling strategies (e.g., greedy, top-k, nucleus sampling) help control generation diversity.
-\end{itemize}
+---
 
-\section{Links to Variational Inference}
-\begin{itemize}
-    \item ELBO:
-    \[ \log p(x \mid \theta) \geq \mathbb{E}_{z \sim q}[\log p(x,z \mid \theta)] + H(q) \]
-    \item Maximizing ELBO encourages higher entropy in latent variables.
-    \item MLE lacks explicit entropy control.
-\end{itemize}
+### In-Context Learning
+- After training a few models, the LLM learns how to apply $P(x)$ efficiently.
+- **Zero-Shot:** Only given instructions, no examples.
+- **Few-Shot with Instruction:** Task and examples are provided.
+- **Few-Shot with Examples Only:** The model must infer the task from examples without instructions.
 
-\section{Solutions to MLE Limitations}
-\begin{itemize}
-    \item Entropy regularization:
-    \[ \theta^* = \arg\max_{\theta} \mathbb{E}_{x \sim P_{\text{data}}}[\log P_{\theta}(x)] + \lambda \cdot H[P_{\theta}(x)] \]
-    \item Smooth labeling:
-    \[ y'_i = \begin{cases} 1 - \epsilon & y = 1 \\ \epsilon / (V - 1) & y \neq 1 \end{cases} \]
-    \item Other solutions discussed:
-    \begin{itemize}
-        \item Contrastive learning (e.g., noise contrastive estimation)
-        \item Preference- or utility-based training (e.g., RLHF)
-        \item Risk minimization (optimize for downstream task loss rather than log-likelihood)
-        \item Scheduled sampling
-        \item Objectives for coverage and diversity
-        \item Adding a penalty for low entropy
-    \end{itemize}
-\end{itemize}
+![In-Context Learning](notesimage2.PNG)
 
-\section*{References and Tools}
-\begin{itemize}
-    \item Radford et al., \textit{Improving Language Understanding by Generative Pre-Training}
-    \item Holtzman et al., \textit{The Curious Case of Neural Text Degeneration}
-    \item Hugging Face TxT360: \url{https://huggingface.co/spaces/LLM360/TxT360}
-    \item https://mobidev.biz/blog/gpu-machine-learning-on-premises-vs-cloud
-    \item Kaplan et al 2021., \textit{Scaling Laws for Neural Language Models}
-\end{itemize}
+---
 
-\end{document}
+### Chain-of-Thought
+- **Chain-of-Thought** prompts the model to explain its reasoning.
+- Example: showing all steps to derive a complex equation.
+- Helps the model adapt quickly and respond more accurately, especially for complex tasks.
+
+---
+
+### Why Does This Work?
+- No definitive proof, but hypotheses include:
+  - Task identification as implicit Bayesian inference.
+  - Transformers performing in-context gradient descent.
+  - Possibly a combination of both.
+
+---
+
+### Scale
+- Scaling adds randomness and diversity, which prevents overfitting as models cancel each other's errors (ensemble effect).
+- More parameters increase variance and randomness.
+- This can be beneficial for specialized models but makes data filtering and preparation challenging.
+- Fitting on poor-quality data leads to bad distributions.
+
+![Model Scaling](notesimage3.PNG)
+
+---
+
+## Challenges of MLE
+
+### KL Divergence Minimization
+- MLE objective:
+
+  $$
+  \arg\max_{\theta} \mathbb{E}_{x \sim P_{\text{data}}}[\log P_{\theta}(x)] = \arg\min_{\theta} \text{KL}(P_{\text{data}} \| P_{\theta})
+  $$
+
+- **Issues:**
+  - Repetitiveness, memorization.
+  - Lack of semantic grounding or task objectives.
+  - Must assign probabilities to incoherent sequences.
+  - Not task-aware — doesn't optimize for accuracy or meaning.
+
+### Entropy and Confidence
+- Token-level entropy:
+
+  $$
+  H_t = -\sum_v P(x_t = v \mid x_{<t}) \log P(x_t = v \mid x_{<t})
+  $$
+
+- Lower entropy = higher confidence.
+- Low entropy can lead to generic or repetitive outputs.
+- Sampling strategies (greedy, top-k, nucleus) help control diversity.
+
+---
+
+## Links to Variational Inference
+- ELBO (Evidence Lower Bound):
+
+  $$
+  \log p(x \mid \theta) \geq \mathbb{E}_{z \sim q}[\log p(x,z \mid \theta)] + H(q)
+  $$
+
+- Maximizing ELBO encourages higher entropy in latent variables.
+- MLE lacks explicit entropy control.
+
+---
+
+## Solutions to MLE Limitations
+
+- **Entropy Regularization:**
+
+  $$
+  \theta^* = \arg\max_{\theta} \mathbb{E}_{x \sim P_{\text{data}}}[\log P_{\theta}(x)] + \lambda \cdot H[P_{\theta}(x)]
+  $$
+
+- **Smooth Labeling:**
+
+  $$
+  y'_i = \begin{cases} 
+  1 - \epsilon & y = 1 \\
+  \epsilon / (V - 1) & y \neq 1
+  \end{cases}
+  $$
+
+- **Other methods:**
+  - Contrastive learning (e.g., noise contrastive estimation).
+  - Preference- or utility-based training (e.g., RLHF).
+  - Risk minimization (optimize downstream task loss).
+  - Scheduled sampling.
+  - Objectives for coverage/diversity.
+  - Penalizing low entropy.
+
+---
+
+## References and Tools
+- Radford et al., *Improving Language Understanding by Generative Pre-Training*
+- Holtzman et al., *The Curious Case of Neural Text Degeneration*
+- Hugging Face TxT360: [https://huggingface.co/spaces/LLM360/TxT360](https://huggingface.co/spaces/LLM360/TxT360)
+- [GPU Machine Learning: On-Premises vs. Cloud](https://mobidev.biz/blog/gpu-machine-learning-on-premises-vs-cloud)
+- Kaplan et al., 2021, *Scaling Laws for Neural Language Models*
+
