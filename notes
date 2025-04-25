@@ -39,7 +39,7 @@ Authors: Josh Salinas and Mitchell Stephens
 - GPUs split tasks across hundreds of simpler cores for efficient matrix multiplication.
 - Downside: GPU cores don't communicate directly and have slower memory access, but they enable faster computation overall.
 
-![GPU Architecture](notesimage1.PNG)
+
 
 ---
 
@@ -62,7 +62,7 @@ Authors: Josh Salinas and Mitchell Stephens
 - **Few-Shot with Instruction:** Task and examples are provided.
 - **Few-Shot with Examples Only:** The model must infer the task from examples without instructions.
 
-![In-Context Learning](notesimage2.PNG)
+
 
 ---
 
@@ -87,7 +87,7 @@ Authors: Josh Salinas and Mitchell Stephens
 - This can be beneficial for specialized models but makes data filtering and preparation challenging.
 - Fitting on poor-quality data leads to bad distributions.
 
-![Model Scaling](notesimage3.PNG)
+
 
 ---
 
