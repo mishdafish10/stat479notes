@@ -31,9 +31,7 @@ authors:
 
 - GPT models maximize the likelihood of observed sequences:
 
-  $
-  \max_{\theta} \sum_{i=1}^T \log P_{\theta}(x_i \mid x_{<i})
-  $
+  $\max_{\theta} \sum_{i=1}^T \log P_{\theta}(x_i \mid x_{<i})$
 
 - This is a Directed Probabilistic Graphical Model.
 - Predicting even simple tokens (e.g., "is" in a factual sentence) requires grammar, factual knowledge, and context resolution.
@@ -124,6 +122,7 @@ authors:
   \arg\max_{\theta} \mathbb{E}_{x \sim P_{\text{data}}}[\log P_{\theta}(x)] = \arg\min_{\theta} \text{KL}(P_{\text{data}} \| P_{\theta})
   $$
 
+
 - **Issues:**
   - Repetitiveness, memorization of training data.
   - Lack of semantic grounding or task objectives.
@@ -136,9 +135,7 @@ authors:
 
 - Token-level entropy:
 
-  $$
-  H_t = -\sum_v P(x_t = v \mid x_{<t}) \log P(x_t = v \mid x_{<t})
-  $$
+  $H_t = -\sum_v P(x_t = v \mid x_{<t}) \log P(x_t = v \mid x_{<t})$
 
 - Lower entropy = higher confidence.
 - Low entropy can lead to generic or repetitive outputs.
@@ -150,9 +147,7 @@ authors:
 
 - ELBO (Evidence Lower Bound):
 
-  $$
-  \log p(x \mid \theta) \geq \mathbb{E}_{z \sim q}[\log p(x,z \mid \theta)] + H(q)
-  $$
+  $\log p(x \mid \theta) \geq \mathbb{E}_{z \sim q}[\log p(x,z \mid \theta)] + H(q)$
 
 - Maximizing ELBO encourages higher entropy in latent variables.
 - MLE lacks explicit entropy control.
@@ -163,18 +158,11 @@ authors:
 
 - **Entropy Regularization:**
 
-  $$
-  \theta^* = \arg\max_{\theta} \mathbb{E}_{x \sim P_{\text{data}}}[\log P_{\theta}(x)] + \lambda \cdot H[P_{\theta}(x)]
-  $$
+  $\theta^* = \arg\max_{\theta} \mathbb{E}_{x \sim P_{\text{data}}}[\log P_{\theta}(x)] + \lambda \cdot H[P_{\theta}(x)]$
 
 - **Smooth Labeling:**
 
-  $$
-  y'_i = \begin{cases} 
-  1 - \epsilon & y = 1 \\
-  \epsilon / (V - 1) & y \neq 1
-  \end{cases}
-  $$
+  $y'_i = \begin{cases} 1 - \epsilon & y = 1 \\\epsilon / (V - 1) & y \neq 1\end{cases}$
 
 - **Other methods:**
   - Contrastive learning (e.g., noise contrastive estimation).
